@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart';
+import 'second.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Rider Earnings Estimator',
+      home: MainPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final TextEditingController _distanceController = TextEditingController();
+  final TextEditingController _rateController = TextEditingController();
+  final TextEditingController _tipController = TextEditingController();
+
+  double baseFare = 0.0;
+  double commission = 0.0;
+
+  void _calculateEarnings() {
+    double distance = double.tryParse(_distanceController.text) ?? 0.0;
+    double rate = double.tryParse(_rateController.text) ?? 0.0;
+
+    setState(() {
+      baseFare = distance * rate;
+      commission = baseFare * 0.02;
+    });
+  }
+
+  void _viewFinalEarnings() {
+    double tip = double.tryParse(_tipController.text) ?? 0.0;
+    double finalEarnings = (baseFare - commission) + tip;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SecondPage(finalEarnings: finalEarnings),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.amber,
+        title: const Text('Rider Earnings Estimator'),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Center(
+              child: Image.asset(
+                'images/chami.png',
+                height: 300,
+                width: 300,
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _distanceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Distance (km)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _rateController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Rate per km (Rs)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _tipController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Tip Amount (optional)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Base Fare:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('Rs. ${baseFare.toStringAsFixed(2)}'),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Platform Commission (2%)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('Rs. ${commission.toStringAsFixed(2)}'),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _calculateEarnings,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                    ),
+                    child: const Text('Calculate Earnings'),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _viewFinalEarnings,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 47, 186, 201),
+                    ),
+                    child: const Text('View Final Earnings'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

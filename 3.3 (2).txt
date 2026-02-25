@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class UpdateDataApp extends StatefulWidget {
+  final int id;
+  final String name;
+  final int age;
+  final String email;
+  final String birthday;
+
+  const UpdateDataApp({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.age,
+    required this.email,
+    required this.birthday,
+  });
+
+  @override
+  State<UpdateDataApp> createState() => _UpdateDataAppState();
+}
+
+class _UpdateDataAppState extends State<UpdateDataApp> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "Update Users",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color.fromARGB(255, 32, 67, 226),
+      ),
+      body: UpdateDataBody(
+        id: widget.id,
+        name: widget.name,
+        age: widget.age,
+        email: widget.email,
+        birthday: widget.birthday,
+      ),
+    );
+  }
+}
+
+class UpdateDataBody extends StatefulWidget {
+  final int id;
+  final String name;
+  final int age;
+  final String email;
+  final String birthday;
+
+  const UpdateDataBody({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.age,
+    required this.email,
+    required this.birthday,
+  });
+
+  @override
+  State<UpdateDataBody> createState() => _UpdateDataBodyState();
+}
+
+class _UpdateDataBodyState extends State<UpdateDataBody> {
+  late TextEditingController newNameCont = TextEditingController();
+  late TextEditingController newAgeCont = TextEditingController();
+  late TextEditingController newEmailCont = TextEditingController();
+  late TextEditingController newBirthdayCont = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    newNameCont = TextEditingController(text: widget.name);
+    newAgeCont = TextEditingController(text: widget.age.toString());
+    newEmailCont = TextEditingController(text: widget.email);
+    newBirthdayCont = TextEditingController(text: widget.birthday.toString());
+  }
+
+  Future<void> updateData() async {
+    await Supabase.instance.client
+        .from('FirstDB')
+        .update({
+          'name': newNameCont.text,
+          'age': newAgeCont.text,
+          'email': newEmailCont.text,
+          'birthday': newBirthdayCont.text,
+        })
+        .eq('id', widget.id);
+
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Card(
+            child: Column(
+              children: [
+                TextField(
+                  controller: newNameCont,
+                  decoration: InputDecoration(labelText: "Enter Name"),
+                ),
+                TextField(
+                  controller: newAgeCont,
+                  decoration: InputDecoration(labelText: "Enter Age"),
+                ),
+                TextField(
+                  controller: newEmailCont,
+                  decoration: InputDecoration(labelText: "Enter Email"),
+                ),
+                TextField(
+                  controller: newBirthdayCont,
+                  decoration: InputDecoration(labelText: "Enter Birthday"),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 30),
+          Card(
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    updateData();
+                  },
+                  child: const Text("Add User"),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

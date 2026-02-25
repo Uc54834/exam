@@ -1,0 +1,108 @@
+import 'package:app10/view.dart';
+import 'package:flutter/material.dart';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://lwqhgflirsfmwlwklbkn.supabase.co',
+    anonKey: 'sb_publishable_Bl0Z4HRk-cIS51nQarUstA_subyY-VH',
+  );
+  runApp(MaterialApp(home: MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("User DB", style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.amber,
+      ),
+      body: AppBody(),
+    );
+  }
+}
+
+class AppBody extends StatefulWidget {
+  const AppBody({super.key});
+
+  @override
+  State<AppBody> createState() => _AppBodyState();
+}
+
+class _AppBodyState extends State<AppBody> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController birthdayController = TextEditingController();
+
+  Future<void> saveData() async {
+    await Supabase.instance.client.from('FirstDB').insert({
+      'name': nameController.text,
+      'age': ageController.text,
+      'email': emailController.text,
+      'birthday': birthdayController.text,
+    });
+
+    nameController.clear();
+    ageController.clear();
+    emailController.clear();
+    birthdayController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Card(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(labelText: "Enter Name"),
+                ),
+                TextField(
+                  controller: ageController,
+                  decoration: InputDecoration(labelText: "Enter Age"),
+                ),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(labelText: "Enter Email"),
+                ),
+                TextField(
+                  controller: birthdayController,
+                  decoration: InputDecoration(labelText: "Enter Birthday"),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 30),
+          Card(
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: saveData,
+                  child: const Text("Add User"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewDataApp()),
+                    );
+                  },
+                  child: const Text("View Users"),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

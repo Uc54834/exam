@@ -1,0 +1,114 @@
+import 'package:app10/update.dart';
+import 'package:flutter/material.dart';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class ViewDataApp extends StatefulWidget {
+  const ViewDataApp({super.key});
+
+  @override
+  State<ViewDataApp> createState() => _ViewDataAppState();
+}
+
+class _ViewDataAppState extends State<ViewDataApp> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "View Users",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: const Color.fromARGB(255, 244, 43, 153),
+      ),
+      body: ViewDataBody(),
+    );
+  }
+}
+
+class ViewDataBody extends StatefulWidget {
+  const ViewDataBody({super.key});
+
+  @override
+  State<ViewDataBody> createState() => _ViewDataBodyState();
+}
+
+class _ViewDataBodyState extends State<ViewDataBody> {
+  List data = [];
+  bool isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    final responce = await Supabase.instance.client
+        .from('FirstDB')
+        .select()
+        .order('id', ascending: false);
+
+    setState(() {
+      data = responce;
+      isLoading = false;
+    });
+  }
+
+  Future<void> deleteData(int id) async {
+    await Supabase.instance.client.from('FirstDB').delete().eq('id', id);
+  }
+
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+    if (data.isEmpty) {
+      return Center(child: Text("No data Found"));
+    }
+    return Center(
+      child: ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: ListTile(
+              leading: Icon(Icons.person),
+              title: Text(data[index]['name'] ?? ''),
+              subtitle: Text(
+                "Age: ${data[index]['age']} | Email: ${data[index]['email']} | Birthday: ${data[index]['birthday']}",
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => UpdateDataApp(
+                            id: data[index]['id'],
+                            name: data[index]['name'],
+                            age: data[index]['age'],
+                            email: data[index]['email'],
+                            birthday: data[index]['birthday'],
+                          ),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.edit),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      deleteData(data[index]['id']);
+                    },
+                    icon: Icon(Icons.delete),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

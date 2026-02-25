@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: MyHome()));
+}
+
+class MyHome extends StatelessWidget {
+  const MyHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.amber,
+        leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+        actions: [
+          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
+          const SizedBox(width: 10),
+          const CircleAvatar(child: Icon(Icons.person)),
+          const SizedBox(width: 10),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Text("For You"),
+                  Text("Top Charts"),
+                  Text("Kids"),
+                  Text("Premium"),
+                ],
+              ),
+            ),
+
+            
+            Center(
+              child: Image.asset(
+                "assest/images.png",
+                height: 250,
+                width: 400,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                "Explore More Games",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+
+            
+            Center(
+              child: Column(
+                children: const [
+                  // we cannot call static directly inside const, so remove const if error
+                ],
+              ),
+            ),
+
+            buildListItem(Icons.flag, "Racing"),
+            buildListItem(Icons.sports_motorsports, "Sport"),
+            buildListItem(Icons.business, "Business"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  
+  static Widget buildListItem(IconData icon, String title) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: ListTile(leading: Icon(icon), title: Text(title)),
+    );
+  }
+}
